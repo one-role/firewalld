@@ -1,0 +1,25 @@
+---
+
+- name: firewalld | ensure firewalld program
+  yum:
+    name: firewalld
+    state: present
+
+- name: firewalld | ensure firewalld running
+  service:
+    name: firewalld
+    state: started
+    enabled: yes
+
+- name: firewalld | Ensure firewall state
+  firewalld:
+    immediate: "{{ item.immediate | default('True') }}"
+    masquerade: "{{ item.masquerade | default(omit) }}"    
+    permanent: "{{ item.permanent | default('True') }}"
+    port: "{{ item.port | default(omit) }}"
+    rich_rule: "{{ item.rich_rule | default(omit) }}"
+    service: "{{ item.service | default(omit) }}"
+    state: "{{ item.state | default('enabled') }}"
+    zone: "{{ item.zone | default(omit) }}"
+  when: firewalld_config is defined
+  loop: "{{ firewalld_config|flatten(levels=1) }}"
